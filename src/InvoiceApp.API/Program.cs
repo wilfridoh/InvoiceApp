@@ -1,8 +1,11 @@
+using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using InvoiceApp.API.Middleware;
 using InvoiceApp.Infrastructure;
 using InvoiceApp.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,29 @@ builder.Services.AddValidatorsFromAssemblyContaining<
 
 // ── Infrastructure (DbContext + Repos + Services) ───────────
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// ── JWT Authentication ─────────────────────────────────────
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var jwtSecret = jwtSettings["Secret"]!;
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer           = true,
+        ValidateAudience         = true,
+        ValidateLifetime         = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer              = jwtSettings["Issuer"],
+        ValidAudience            = jwtSettings["Audience"],
+        IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+    };
+});
 
 // ── CORS ─────────────────────────────────────────────────────
 builder.Services.AddCors(opts =>
@@ -52,6 +78,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
