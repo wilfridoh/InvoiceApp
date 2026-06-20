@@ -1,0 +1,1 @@
+# ExceptionHandlerMiddleware.cs — captura excepciones no controladas y devuelve respuesta JSON estándar

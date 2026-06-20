@@ -1,0 +1,3 @@
+# InvoiceApp.Domain — Enums
+# InvoiceStatus: Issued, Cancelled
+# UserRole: Admin, Seller

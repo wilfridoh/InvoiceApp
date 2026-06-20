@@ -1,0 +1,2 @@
+# InvoiceApp.Domain — Interfaces de repositorio
+# IRepository<T> (genérico), IInvoiceRepository, IClientRepository, IProductRepository, IUserRepository, IUnitOfWork

@@ -1,0 +1,191 @@
+================================================================================
+  ESTRUCTURA DE CARPETAS — invoice-app-backend
+  InvoiceApp — Sistema de Gestión de Facturas
+  Arquitectura: Clean Architecture (.NET 8)
+================================================================================
+
+invoice-app-backend/
+│
+├── InvoiceApp.sln
+│
+├── src/
+│   │
+│   ├── InvoiceApp.Domain/                    ← Sin dependencias externas
+│   │   ├── InvoiceApp.Domain.csproj
+│   │   ├── Entities/
+│   │   │   ├── Invoice.cs
+│   │   │   ├── InvoiceDetail.cs
+│   │   │   ├── InvoicePayment.cs
+│   │   │   ├── Client.cs
+│   │   │   ├── Product.cs
+│   │   │   ├── User.cs
+│   │   │   └── PaymentMethod.cs
+│   │   ├── Enums/
+│   │   │   ├── InvoiceStatus.cs              (Draft, Issued, Cancelled)
+│   │   │   └── UserRole.cs                  (Admin, Seller)
+│   │   └── Interfaces/
+│   │       ├── IRepository.cs               (genérico: Get, GetAll, Add, Update)
+│   │       ├── IInvoiceRepository.cs
+│   │       ├── IClientRepository.cs
+│   │       ├── IProductRepository.cs
+│   │       ├── IUserRepository.cs
+│   │       └── IUnitOfWork.cs
+│   │
+│   ├── InvoiceApp.Application/               ← Depende de: Domain
+│   │   ├── InvoiceApp.Application.csproj
+│   │   ├── Services/
+│   │   │   ├── AuthService.cs
+│   │   │   ├── InvoiceService.cs
+│   │   │   ├── ClientService.cs
+│   │   │   ├── ProductService.cs
+│   │   │   └── UserService.cs
+│   │   ├── Interfaces/
+│   │   │   ├── IAuthService.cs
+│   │   │   ├── IInvoiceService.cs
+│   │   │   ├── IClientService.cs
+│   │   │   ├── IProductService.cs
+│   │   │   └── IUserService.cs
+│   │   ├── DTOs/
+│   │   │   ├── Common/
+│   │   │   │   └── PagedResult.cs            (PagedResult<T> genérico)
+│   │   │   ├── Auth/
+│   │   │   │   ├── LoginRequest.cs
+│   │   │   │   └── LoginResponse.cs          (contiene el JWT token)
+│   │   │   ├── Invoices/
+│   │   │   │   ├── CreateInvoiceRequest.cs
+│   │   │   │   ├── CreateInvoiceDetailRequest.cs
+│   │   │   │   ├── CreateInvoicePaymentRequest.cs
+│   │   │   │   ├── InvoiceResponse.cs        (detalle completo con relaciones)
+│   │   │   │   ├── InvoiceListResponse.cs    (resumen para la lista)
+│   │   │   │   └── InvoiceFilterRequest.cs   (parámetros de búsqueda)
+│   │   │   ├── Clients/
+│   │   │   │   ├── CreateClientRequest.cs
+│   │   │   │   ├── UpdateClientRequest.cs
+│   │   │   │   └── ClientResponse.cs
+│   │   │   ├── Products/
+│   │   │   │   ├── CreateProductRequest.cs
+│   │   │   │   ├── UpdateProductRequest.cs
+│   │   │   │   └── ProductResponse.cs
+│   │   │   └── Users/
+│   │   │       ├── CreateUserRequest.cs
+│   │   │       ├── UpdateUserRequest.cs
+│   │   │       └── UserResponse.cs
+│   │   ├── Validators/
+│   │   │   ├── CreateInvoiceValidator.cs
+│   │   │   ├── CreateClientValidator.cs
+│   │   │   ├── CreateProductValidator.cs
+│   │   │   └── CreateUserValidator.cs
+│   │   └── Mappings/
+│   │       └── AutoMapperProfile.cs          (mapeos entidad <-> DTO)
+│   │
+│   ├── InvoiceApp.Infrastructure/            ← Depende de: Domain, Application(interfaces)
+│   │   ├── InvoiceApp.Infrastructure.csproj
+│   │   ├── Data/
+│   │   │   ├── AppDbContext.cs
+│   │   │   ├── Configurations/               (Fluent API por entidad)
+│   │   │   │   ├── InvoiceConfiguration.cs
+│   │   │   │   ├── InvoiceDetailConfiguration.cs
+│   │   │   │   ├── InvoicePaymentConfiguration.cs
+│   │   │   │   ├── ClientConfiguration.cs
+│   │   │   │   ├── ProductConfiguration.cs
+│   │   │   │   ├── UserConfiguration.cs
+│   │   │   │   └── PaymentMethodConfiguration.cs
+│   │   │   └── Migrations/                   (generado por EF Core)
+│   │   ├── Repositories/
+│   │   │   ├── BaseRepository.cs             (implementación genérica)
+│   │   │   ├── InvoiceRepository.cs
+│   │   │   ├── ClientRepository.cs
+│   │   │   ├── ProductRepository.cs
+│   │   │   └── UserRepository.cs
+│   │   ├── UnitOfWork.cs
+│   │   └── DependencyInjection.cs            (extension: AddInfrastructure())
+│   │
+│   └── InvoiceApp.API/                       ← Depende de: Application, Infrastructure(DI)
+│       ├── InvoiceApp.API.csproj
+│       ├── Program.cs                        (configuración DI, JWT, CORS, Swagger)
+│       ├── appsettings.json
+│       ├── appsettings.Development.json
+│       ├── Controllers/
+│       │   ├── BaseController.cs             (hereda ControllerBase, tiene [ApiController])
+│       │   ├── AuthController.cs             (POST /api/auth/login)
+│       │   ├── InvoicesController.cs         (GET, POST, PATCH)
+│       │   ├── ClientsController.cs          (CRUD)
+│       │   ├── ProductsController.cs         (CRUD)
+│       │   └── UsersController.cs            (CRUD - solo Admin)
+│       └── Middleware/
+│           └── ExceptionHandlerMiddleware.cs (captura excepciones globales)
+│
+└── tests/
+    ├── InvoiceApp.Unit.Tests/
+    │   ├── InvoiceApp.Unit.Tests.csproj
+    │   └── Services/
+    │       └── InvoiceServiceTests.cs
+    └── InvoiceApp.Integration.Tests/
+        └── InvoiceApp.Integration.Tests.csproj
+
+================================================================================
+  REFERENCIAS ENTRE PROYECTOS
+================================================================================
+  InvoiceApp.API
+    → InvoiceApp.Application
+    → InvoiceApp.Infrastructure   (solo para registrar en DI en Program.cs)
+
+  InvoiceApp.Application
+    → InvoiceApp.Domain
+
+  InvoiceApp.Infrastructure
+    → InvoiceApp.Domain
+    → InvoiceApp.Application      (solo para implementar interfaces de repos)
+
+  InvoiceApp.Domain
+    → (ninguna referencia a otros proyectos del solution)
+
+================================================================================
+  PAQUETES NUGET POR PROYECTO
+================================================================================
+  InvoiceApp.Domain
+    (ninguno — solo .NET BCL)
+
+  InvoiceApp.Application
+    AutoMapper                    8.x
+    FluentValidation              11.x
+
+  InvoiceApp.Infrastructure
+    Microsoft.EntityFrameworkCore.SqlServer   8.x
+    Microsoft.EntityFrameworkCore.Tools       8.x
+
+  InvoiceApp.API
+    Microsoft.AspNetCore.Authentication.JwtBearer   8.x
+    Swashbuckle.AspNetCore                          6.x
+    BCrypt.Net-Next                                 4.x
+    AutoMapper.Extensions.Microsoft.DependencyInjection   12.x
+    FluentValidation.AspNetCore                     11.x
+
+================================================================================
+  COMANDOS PARA CREAR EL PROYECTO DESDE CERO
+================================================================================
+  cd C:\Documentacion\ProcesoIntegritySolution\PruebaTecnica\invoice-app-backend
+
+  dotnet new sln -n InvoiceApp
+  mkdir src tests
+
+  cd src
+  dotnet new classlib -n InvoiceApp.Domain        -f net8.0 -o InvoiceApp.Domain
+  dotnet new classlib -n InvoiceApp.Application   -f net8.0 -o InvoiceApp.Application
+  dotnet new classlib -n InvoiceApp.Infrastructure -f net8.0 -o InvoiceApp.Infrastructure
+  dotnet new webapi   -n InvoiceApp.API           -f net8.0 -o InvoiceApp.API
+  cd ..
+
+  dotnet sln add src/InvoiceApp.Domain/InvoiceApp.Domain.csproj
+  dotnet sln add src/InvoiceApp.Application/InvoiceApp.Application.csproj
+  dotnet sln add src/InvoiceApp.Infrastructure/InvoiceApp.Infrastructure.csproj
+  dotnet sln add src/InvoiceApp.API/InvoiceApp.API.csproj
+
+  (Agregar referencias entre proyectos)
+  dotnet add src/InvoiceApp.Application/InvoiceApp.Application.csproj   reference src/InvoiceApp.Domain/InvoiceApp.Domain.csproj
+  dotnet add src/InvoiceApp.Infrastructure/InvoiceApp.Infrastructure.csproj reference src/InvoiceApp.Domain/InvoiceApp.Domain.csproj
+  dotnet add src/InvoiceApp.Infrastructure/InvoiceApp.Infrastructure.csproj reference src/InvoiceApp.Application/InvoiceApp.Application.csproj
+  dotnet add src/InvoiceApp.API/InvoiceApp.API.csproj reference src/InvoiceApp.Application/InvoiceApp.Application.csproj
+  dotnet add src/InvoiceApp.API/InvoiceApp.API.csproj reference src/InvoiceApp.Infrastructure/InvoiceApp.Infrastructure.csproj
+
+================================================================================

@@ -1,0 +1,3 @@
+# AppDbContext.cs — EF Core DbContext
+# Configurations/ — Fluent API por entidad (tipos, restricciones, relaciones)
+# Migrations/ — generado automáticamente por: dotnet ef migrations add InitialCreate

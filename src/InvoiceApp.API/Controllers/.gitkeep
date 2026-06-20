@@ -1,0 +1,3 @@
+# Controllers: AuthController, InvoicesController, ClientsController, ProductsController, UsersController
+# Middleware: ExceptionHandlerMiddleware
+# Program.cs — punto de entrada, configuración de todos los servicios

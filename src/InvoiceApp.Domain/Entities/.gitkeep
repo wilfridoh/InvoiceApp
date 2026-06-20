@@ -1,0 +1,5 @@
+# InvoiceApp.Domain
+# Entidades puras del dominio — sin dependencias NuGet externas
+# Clases: Invoice, InvoiceDetail, InvoicePayment, Client, Product, User, PaymentMethod
+# Enums: InvoiceStatus, UserRole
+# Interfaces: IRepository<T>, IInvoiceRepository, IClientRepository, IProductRepository, IUserRepository, IUnitOfWork
