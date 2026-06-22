@@ -5,6 +5,7 @@ using InvoiceApp.API.Middleware;
 using InvoiceApp.Infrastructure;
 using InvoiceApp.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,14 @@ app.UseSwaggerUI(c =>
 });
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapGet("/health/db", async (AppDbContext db) =>
+{
+    var canConnect = await db.Database.CanConnectAsync();
+
+    return canConnect
+        ? Results.Ok(new { success = true, message = "Database connection OK" })
+        : Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+});
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");
