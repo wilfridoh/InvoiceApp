@@ -60,11 +60,15 @@ builder.Services.AddCors(opts =>
 // ─────────────────────────────────────────────────────────────
 var app = builder.Build();
 
-// ── Seed inicial ─────────────────────────────────────────────
+// ── Seed inicial (opcional) ──────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DataSeeder.Seed(db);
+
+    // Run seeding only if DataSeeder exists in the deployed assembly.
+    var seederType = Type.GetType("InvoiceApp.Infrastructure.Data.DataSeeder, InvoiceApp.Infrastructure");
+    var seedMethod = seederType?.GetMethod("Seed", new[] { typeof(AppDbContext) });
+    seedMethod?.Invoke(null, new object[] { db });
 }
 
 // ── Pipeline ─────────────────────────────────────────────────
