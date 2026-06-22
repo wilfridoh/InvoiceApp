@@ -1,4 +1,5 @@
 using System.Net;
+using System.Data.Common;
 using System.Text.Json;
 
 namespace InvoiceApp.API.Middleware;
@@ -27,6 +28,14 @@ public class ExceptionHandlerMiddleware
         catch (InvalidOperationException ex)
         {
             await WriteError(context, (int)HttpStatusCode.BadRequest, ex.Message);
+        }
+        catch (DbException ex)
+        {
+            _logger.LogError(ex, "Error de base de datos");
+            await WriteError(
+                context,
+                (int)HttpStatusCode.ServiceUnavailable,
+                "No se pudo conectar a la base de datos. Revisa firewall, cadena de conexión o credenciales.");
         }
         catch (Exception ex)
         {
