@@ -35,7 +35,7 @@ public class ExceptionHandlerMiddleware
             await WriteError(
                 context,
                 (int)HttpStatusCode.ServiceUnavailable,
-                "No se pudo conectar a la base de datos. Revisa firewall, cadena de conexión o credenciales.");
+                $"No se pudo conectar a la base de datos. Detalle: {ex.Message}");
         }
         catch (Exception ex)
         {
