@@ -74,11 +74,13 @@ using (var scope = app.Services.CreateScope())
 // ── Pipeline ─────────────────────────────────────────────────
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.RoutePrefix = "swagger";
+});
+
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");
