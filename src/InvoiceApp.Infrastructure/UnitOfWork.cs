@@ -11,6 +11,10 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository    Users    { get; }
     public IClientRepository  Clients  { get; }
     public IProductRepository Products { get; }
+    public IInvoiceRepository Invoices { get; }
+    public IInvoiceDetailRepository InvoiceDetails { get; }
+    public IInvoicePaymentRepository InvoicePayments { get; }
+    public IPaymentMethodRepository PaymentMethods { get; }
 
     public UnitOfWork(AppDbContext ctx)
     {
@@ -18,6 +22,10 @@ public class UnitOfWork : IUnitOfWork
         Users     = new UserRepository(ctx);
         Clients   = new ClientRepository(ctx);
         Products  = new ProductRepository(ctx);
+        Invoices = new InvoiceRepository(ctx);
+        InvoiceDetails = new InvoiceDetailRepository(ctx);
+        InvoicePayments = new InvoicePaymentRepository(ctx);
+        PaymentMethods = new PaymentMethodRepository(ctx);
     }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>

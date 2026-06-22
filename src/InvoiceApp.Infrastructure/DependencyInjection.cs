@@ -25,6 +25,10 @@ public static class DependencyInjection
         services.AddScoped<ITokenService,   JwtTokenService>();
         services.AddScoped<IClientService,  ClientService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IInvoiceDetailService, InvoiceDetailService>();
+        services.AddScoped<IInvoicePaymentService, InvoicePaymentService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 
         return services;
     }
