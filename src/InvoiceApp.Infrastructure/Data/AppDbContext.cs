@@ -8,12 +8,14 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<User>   Users   => Set<User>();
-    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<User>    Users    => Set<User>();
+    public DbSet<Client>  Clients  => Set<Client>();
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ClientConfiguration());
+        builder.ApplyConfiguration(new ProductConfiguration());
     }
 }

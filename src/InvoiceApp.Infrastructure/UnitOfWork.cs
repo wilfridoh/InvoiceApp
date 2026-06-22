@@ -8,14 +8,16 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _ctx;
 
-    public IUserRepository   Users   { get; }
-    public IClientRepository Clients { get; }
+    public IUserRepository    Users    { get; }
+    public IClientRepository  Clients  { get; }
+    public IProductRepository Products { get; }
 
     public UnitOfWork(AppDbContext ctx)
     {
-        _ctx    = ctx;
-        Users   = new UserRepository(ctx);
-        Clients = new ClientRepository(ctx);
+        _ctx      = ctx;
+        Users     = new UserRepository(ctx);
+        Clients   = new ClientRepository(ctx);
+        Products  = new ProductRepository(ctx);
     }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
