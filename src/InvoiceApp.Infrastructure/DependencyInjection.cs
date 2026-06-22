@@ -3,6 +3,7 @@ using InvoiceApp.Application.Services;
 using InvoiceApp.Domain.Interfaces;
 using InvoiceApp.Infrastructure.Data;
 using InvoiceApp.Infrastructure.Services;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +16,13 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        var rawConnectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection no configurado.");
+
+        var normalizedConnectionString = NormalizeSqlConnectionString(rawConnectionString);
+
         services.AddDbContext<AppDbContext>(opts =>
-            opts.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            opts.UseSqlServer(normalizedConnectionString));
 
         services.AddScoped<IUnitOfWork,     UnitOfWork>();
         services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
@@ -31,5 +37,16 @@ public static class DependencyInjection
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 
         return services;
+    }
+
+    private static string NormalizeSqlConnectionString(string value)
+    {
+        var sanitized = value.Trim().Trim('"', '\'');
+        var builder = new SqlConnectionStringBuilder(sanitized);
+
+        if (builder.DataSource.StartsWith("tcp:", StringComparison.OrdinalIgnoreCase))
+            builder.DataSource = builder.DataSource[4..];
+
+        return builder.ConnectionString;
     }
 }

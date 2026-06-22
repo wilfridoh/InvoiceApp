@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using InvoiceApp.API.Middleware;
 using InvoiceApp.Infrastructure;
 using InvoiceApp.Infrastructure.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -89,6 +90,27 @@ app.MapGet("/health/db", async (AppDbContext db) =>
     return canConnect
         ? Results.Ok(new { success = true, message = "Database connection OK" })
         : Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+});
+
+app.MapGet("/health/db-config", (IConfiguration config) =>
+{
+    var raw = config.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(raw))
+        return Results.Problem("ConnectionStrings:DefaultConnection no configurado.", statusCode: 500);
+
+    var sanitized = raw.Trim().Trim('"', '\'');
+    var builder = new SqlConnectionStringBuilder(sanitized);
+
+    return Results.Ok(new
+    {
+        success = true,
+        server = builder.DataSource,
+        database = builder.InitialCatalog,
+        encrypt = builder.Encrypt,
+        trustServerCertificate = builder.TrustServerCertificate,
+        connectTimeout = builder.ConnectTimeout,
+        hasUser = !string.IsNullOrWhiteSpace(builder.UserID)
+    });
 });
 
 app.UseHttpsRedirection();
