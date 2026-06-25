@@ -34,6 +34,6 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .HasDefaultValue("Issued");
 
         builder.Property(x => x.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

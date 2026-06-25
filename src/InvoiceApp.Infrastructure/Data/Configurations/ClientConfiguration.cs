@@ -40,6 +40,6 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasDefaultValue(true);
 
         builder.Property(c => c.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

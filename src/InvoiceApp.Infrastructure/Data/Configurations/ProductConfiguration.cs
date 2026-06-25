@@ -31,6 +31,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasDefaultValue(true);
 
         builder.Property(p => p.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
